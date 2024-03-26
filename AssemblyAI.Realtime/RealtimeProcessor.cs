@@ -136,7 +136,6 @@ namespace AssemblyAI.Realtime
                     _webSocket?.Dispose();
                     _webSocket = null;
 
-                    await Task.Run(() => OnDisconnected?.Invoke(this, null));
                     break;
 
                 default:
@@ -188,7 +187,7 @@ namespace AssemblyAI.Realtime
             _webSocket = new WebsocketClient(_apiEndpoint);
             _webSocket.IsReconnectionEnabled = false;
             _webSocket.MessageReceived.Subscribe(Websocket_MessageReceived);
-            _webSocket.DisconnectionHappened.Subscribe(Websocket_DisconnectHappened);
+            _webSocket.DisconnectionHappened.Take(1).Subscribe(Websocket_DisconnectHappened);
 
             // Try to connect to the websocket, or fail.
             try
